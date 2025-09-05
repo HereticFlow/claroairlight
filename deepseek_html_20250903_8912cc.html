@@ -1,0 +1,1618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CLARO - Smart Window Solution</title>
+    <meta name="description" content="CLARO protects your privacy and lets in light without insects. The innovative solution for your windows.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4A90E2;
+            --accent: #FF8A3D;
+            --accent-light: #FFB88C;
+            --dark: #2C3E50;
+            --light: #FFFFFF;
+            --paper: #F7F9FC;
+            --grid-major: rgba(74, 144, 226, 0.1);
+            --grid-minor: rgba(74, 144, 226, 0.05);
+            --text: #34495E;
+            --text-light: #7F8C8D;
+            --border: #DCE6F2;
+            --sun-gradient: linear-gradient(135deg, #FFD26F 0%, #FF8A3D 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background-color: var(--paper);
+            background-image:
+                linear-gradient(var(--grid-major) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
+                linear-gradient(var(--grid-minor) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px);
+            background-size: 20px 20px, 20px 20px, 4px 4px, 4px 4px;
+            background-position: -0.5px -0.5px, -0.5px -0.5px, -0.5px -0.5px, -0.5px -0.5px;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, .blueprint-text {
+            font-family: 'Space Mono', monospace;
+            line-height: 1.3;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+        }
+
+        section {
+            padding: 80px 0;
+            position: relative;
+        }
+
+        section::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 20px;
+            right: 20px;
+            height: 1px;
+            background: var(--grid-major);
+        }
+
+        .coordinates {
+            position: absolute;
+            font-family: 'Space Mono', monospace;
+            font-size: 8px;
+            color: var(--text-light);
+            opacity: 0.7;
+        }
+
+        /* Blueprint Elements */
+        .dimension-line {
+            position: relative;
+            display: inline-block;
+            margin: 10px 0;
+            padding-left: 15px;
+            border-left: 2px solid var(--accent);
+            font-family: 'Space Mono', monospace;
+            font-size: 14px;
+            color: var(--primary);
+        }
+
+        .blueprint-note {
+            background-color: rgba(255, 138, 61, 0.05);
+            border-left: 3px solid var(--accent);
+            padding: 15px;
+            margin: 20px 0;
+            font-family: 'Space Mono', monospace;
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        .tech-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background: var(--sun-gradient);
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            margin-right: 10px;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .tech-label {
+            display: inline-block;
+            background: var(--sun-gradient);
+            color: white;
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            padding: 2px 8px;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+            border-radius: 3px;
+        }
+
+        .dimension-arrow {
+            position: relative;
+            height: 20px;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .dimension-arrow::before,
+        .dimension-arrow::after {
+            content: "";
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-top: 1px solid var(--primary);
+            border-right: 1px solid var(--primary);
+        }
+
+        .dimension-arrow::before {
+            left: 0;
+            transform: rotate(-135deg);
+        }
+
+        .dimension-arrow::after {
+            right: 0;
+            transform: rotate(45deg);
+        }
+
+        .dimension-arrow .line {
+            flex-grow: 1;
+            height: 1px;
+            background: repeating-linear-gradient(90deg, var(--primary), var(--primary) 4px, transparent 4px, transparent 8px);
+        }
+
+        .dimension-arrow .value {
+            padding: 0 10px;
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            color: var(--primary);
+        }
+
+        .blueprint-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--dark);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 3px solid var(--accent);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-text {
+            color: white;
+            font-family: 'Space Mono', monospace;
+            font-weight: 700;
+            font-size: 24px;
+            letter-spacing: 1px;
+        }
+
+        .logo-text span {
+            color: var(--accent);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-left: 30px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--light);
+            font-weight: 500;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(120deg, var(--primary) 0%, #87CEEB 100%);
+            color: white;
+            padding: 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            z-index: 0;
+        }
+
+        .sun-decoration {
+            position: absolute;
+            top: -100px;
+            right: -100px;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, var(--accent-light) 0%, rgba(255, 138, 61, 0.3) 40%, transparent 70%);
+            border-radius: 50%;
+            z-index: 0;
+            opacity: 0.8;
+        }
+
+        .hero-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            padding: 60px 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .hero h1 {
+            font-size: 42px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .hero h1::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: -10px;
+            width: 80px;
+            height: 3px;
+            background-color: var(--accent);
+        }
+
+        .hero p {
+            font-size: 18px;
+            margin-bottom: 30px;
+            max-width: 500px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .hero-image {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .hero-image::before {
+            content: "";
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 40px;
+            height: 40px;
+            background-image: linear-gradient(45deg, transparent 49%, var(--accent) 49%, var(--accent) 51%, transparent 51%);
+            opacity: 0.7;
+        }
+
+        .drawing-frame {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            position: relative;
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            border-radius: 5px;
+        }
+
+        .btn {
+            display: inline-block;
+            background: var(--sun-gradient);
+            color: white;
+            padding: 14px 28px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: 'Space Mono', monospace;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(255, 138, 61, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 138, 61, 0.4);
+        }
+
+        /* Blueprint Features */
+        .blueprint-features {
+            background-color: var(--paper);
+            position: relative;
+        }
+
+        .blueprint-features::before {
+            content: "SECTION_01";
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            color: var(--text-light);
+            opacity: 0.7;
+        }
+
+        .section-title {
+            margin-bottom: 60px;
+            position: relative;
+            padding-left: 20px;
+            border-left: 4px solid var(--accent);
+        }
+
+        .section-title h2 {
+            font-size: 32px;
+            color: var(--primary);
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .section-title p {
+            color: var(--text-light);
+            max-width: 700px;
+            font-size: 18px;
+            font-weight: 300;
+        }
+
+        .section-ref {
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .blueprint-card {
+            border: 1px solid var(--border);
+            padding: 30px;
+            position: relative;
+            background-color: var(--light);
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .blueprint-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .blueprint-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--sun-gradient);
+            border-radius: 8px 8px 0 0;
+        }
+
+        .blueprint-card h3 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .blueprint-icon {
+            font-size: 24px;
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+
+        /* Use Cases */
+        .use-cases {
+            background-color: var(--paper);
+            position: relative;
+        }
+
+        .use-cases::before {
+            content: "SECTION_02";
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            color: var(--text-light);
+            opacity: 0.7;
+        }
+
+        .case-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .case-item {
+            background-color: var(--light);
+            padding: 30px;
+            border: 1px solid var(--border);
+            position: relative;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .case-item::before {
+            content: "";
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 30px;
+            height: 30px;
+            background-image:
+                linear-gradient(45deg, transparent 45%, var(--accent) 45%, var(--accent) 55%, transparent 55%),
+                linear-gradient(-45deg, transparent 45%, var(--accent) 45%, var(--accent) 55%, transparent 55%);
+            opacity: 0.3;
+        }
+
+        .case-title {
+            font-size: 18px;
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-weight: 700;
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .case-title::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        .case-description {
+            color: var(--text-light);
+            margin-bottom: 20px;
+        }
+
+        .case-solution {
+            padding-left: 15px;
+            border-left: 2px solid var(--accent);
+            font-weight: 500;
+            color: var(--primary);
+        }
+
+        /* Technical Drawing */
+        .technical-drawing {
+            background-color: var(--paper);
+            position: relative;
+        }
+
+        .technical-drawing::before {
+            content: "SECTION_03";
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            color: var(--text-light);
+            opacity: 0.7;
+        }
+
+        .drawing-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 50px;
+            align-items: center;
+        }
+
+        .drawing-image {
+            flex: 1;
+            min-width: 300px;
+            border: 1px solid var(--border);
+            padding: 20px;
+            position: relative;
+            background-color: var(--light);
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .drawing-stamp {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            transform: rotate(-5deg);
+            opacity: 0.8;
+            background-color: var(--light);
+            border-radius: 3px;
+        }
+
+        .drawing-specs {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+            padding-left: 20px;
+            border-left: 1px dashed var(--border);
+        }
+
+        .spec-item {
+            margin-bottom: 20px;
+            position: relative;
+            padding-left: 40px;
+        }
+
+        .spec-number {
+            position: absolute;
+            left: 0;
+            top: 2px;
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: var(--sun-gradient);
+            color: white;
+            text-align: center;
+            line-height: 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 50%;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .spec-title {
+            font-size: 18px;
+            color: var(--primary);
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-family: 'Space Mono', monospace;
+        }
+
+        /* Testimonials */
+        .testimonials {
+            background-color: var(--paper);
+            position: relative;
+        }
+
+        .testimonials::before {
+            content: "SECTION_04";
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            color: var(--text-light);
+            opacity: 0.7;
+        }
+
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .testimonial-item {
+            background-color: var(--light);
+            padding: 30px;
+            border: 1px solid var(--border);
+            position: relative;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .testimonial-item::before {
+            content: """;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 60px;
+            color: var(--accent);
+            opacity: 0.2;
+            font-family: serif;
+            line-height: 1;
+        }
+
+        .testimonial-text {
+            font-style: italic;
+            margin-bottom: 20px;
+            color: var(--text);
+            position: relative;
+            z-index: 1;
+            padding-left: 20px;
+        }
+
+        .testimonial-author {
+            font-weight: 600;
+            color: var(--primary);
+            font-family: 'Space Mono', monospace;
+        }
+
+        .testimonial-location {
+            font-size: 14px;
+            color: var(--text-light);
+            font-family: 'Space Mono', monospace;
+        }
+
+        /* Pricing */
+        .pricing {
+            background-color: var(--paper);
+            position: relative;
+        }
+
+        .pricing::before {
+            content: "SECTION_05";
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            color: var(--text-light);
+            opacity: 0.7;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .pricing-item {
+            border: 1px solid var(--border);
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            background-color: var(--light);
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+        }
+
+        .pricing-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .pricing-item.featured {
+            border: 2px solid var(--accent);
+            transform: scale(1.05);
+        }
+
+        .pricing-item.featured:hover {
+            transform: scale(1.05) translateY(-5px);
+        }
+
+        .pricing-badge {
+            position: absolute;
+            top: -10px;
+            right: 20px;
+            background: var(--sun-gradient);
+            color: white;
+            padding: 5px 10px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-family: 'Space Mono', monospace;
+            border-radius: 3px;
+        }
+
+        .pricing-title {
+            font-size: 22px;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .pricing-price {
+            font-size: 36px;
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .pricing-original {
+            font-size: 16px;
+            color: var(--text-light);
+            text-decoration: line-through;
+            margin-left: 10px;
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 25px;
+            text-align: left;
+            padding: 0 15px;
+        }
+
+        .pricing-features li {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .pricing-features li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+        }
+
+        /* Lead Form */
+        .lead-form {
+            background-color: var(--paper);
+            position: relative;
+        }
+
+        .lead-form::before {
+            content: "SECTION_06";
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            color: var(--text-light);
+            opacity: 0.7;
+        }
+
+        .form-container {
+            max-width: 700px;
+            margin: 0 auto;
+            background-color: var(--light);
+            padding: 40px;
+            border: 1px solid var(--border);
+            position: relative;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--sun-gradient);
+            border-radius: 8px 8px 0 0;
+        }
+
+        .form-title {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed var(--border);
+        }
+
+        .form-title h3 {
+            font-size: 28px;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .form-title p {
+            color: var(--text-light);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text);
+            font-family: 'Space Mono', monospace;
+            font-size: 14px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border);
+            font-size: 16px;
+            transition: border-color 0.3s;
+            background-color: var(--paper);
+            border-radius: 4px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(255, 138, 61, 0.2);
+        }
+
+        .form-section-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin: 30px 0 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            color: var(--primary);
+            font-family: 'Space Mono', monospace;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--sun-gradient);
+            color: white;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+            font-family: 'Space Mono', monospace;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(255, 138, 61, 0.3);
+        }
+
+        .submit-btn:hover {
+            box-shadow: 0 6px 20px rgba(255, 138, 61, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(to right, var(--dark) 0%, #3A506B 100%);
+            color: white;
+            padding: 60px 0 30px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-column h4 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: white;
+            position: relative;
+            padding-bottom: 10px;
+            font-family: 'Space Mono', monospace;
+            font-weight: 600;
+        }
+
+        .footer-column h4::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 30px;
+            height: 2px;
+            background-color: var(--accent);
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: color 0.3s;
+            font-family: 'Space Mono', monospace;
+            font-size: 14px;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent);
+        }
+
+        .footer-text {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 20px;
+            line-height: 1.7;
+            font-size: 14px;
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+
+        /* Blueprint Grid Overlay */
+        .coordinates-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.08;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Light rays effect */
+        .light-ray {
+            position: absolute;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            width: 60px;
+            height: 100%;
+            top: 0;
+            transform: skewX(-20deg);
+            animation: rayAnimation 8s infinite linear;
+            opacity: 0;
+            z-index: 0;
+        }
+
+        @keyframes rayAnimation {
+            0% {
+                left: -100px;
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.3;
+            }
+            20% {
+                opacity: 0.5;
+            }
+            30% {
+                opacity: 0.3;
+            }
+            40% {
+                left: 100%;
+                opacity: 0;
+            }
+            100% {
+                left: 100%;
+                opacity: 0;
+            }
+        }
+
+        .ray-1 {
+            top: 20%;
+            animation-delay: 0s;
+            height: 100px;
+        }
+
+        .ray-2 {
+            top: 60%;
+            animation-delay: 2s;
+            height: 150px;
+        }
+
+        .ray-3 {
+            top: 40%;
+            animation-delay: 4s;
+            height: 80px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-container {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-image {
+                order: -1;
+            }
+
+            .drawing-container {
+                flex-direction: column;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            section {
+                padding: 60px 0;
+            }
+
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .pricing-item.featured {
+                transform: none;
+            }
+            
+            .pricing-item.featured:hover {
+                transform: translateY(-5px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Blueprint Grid Overlay -->
+    <div class="coordinates-overlay">
+        <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+            <pattern id="smallGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+                <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#4A90E2" stroke-width="0.5"/>
+            </pattern>
+            <rect width="100%" height="100%" fill="url(#smallGrid)"/>
+        </svg>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">
+                    <div class="logo-text">CLARO</div>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#use-cases">Solutions</a></li>
+                    <li><a href="#pricing">Pricing</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="sun-decoration"></div>
+        <div class="light-ray ray-1"></div>
+        <div class="light-ray ray-2"></div>
+        <div class="light-ray ray-3"></div>
+        
+        <div class="container">
+            <div class="hero-container">
+                <div class="hero-content">
+                    <div class="tech-label">CL-350</div>
+                    <h1>Your window just got smarter</h1>
+                    <p>Privacy + Fresh air + Zero mosquitoes. Finally.</p>
+                    <p>CLARO protects your privacy (even while dancing in your underwear) and lets in light... without the bugs.</p>
+                    <a href="#contact" class="btn">Pre-order now - 20% off</a>
+                </div>
+                <div class="hero-image">
+                    <div class="drawing-frame">
+                        <svg width="100%" height="auto" viewBox="0 0 500 400" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Window frame outline -->
+                            <rect x="50" y="50" width="400" height="300" fill="none" stroke="white" stroke-width="2"/>
+                            <!-- Inner frame -->
+                            <rect x="70" y="70" width="360" height="260" fill="none" stroke="white" stroke-width="2"/>
+                            <!-- Grid pattern background -->
+                            <pattern id="smallGrid" width="8" height="8" patternUnits="userSpaceOnUse">
+                                <path d="M 8 0 L 0 0 0 8" fill="none" stroke="white" stroke-width="0.25" opacity="0.2"/>
+                            </pattern>
+                            <rect x="70" y="70" width="360" height="260" fill="url(#smallGrid)"/>
+                            <!-- Sun pattern on the screen -->
+                            <circle cx="250" cy="160" r="40" fill="url(#sunGradient)" opacity="0.8"/>
+                            <g stroke="white" stroke-width="1" fill="none">
+                                <line x1="250" y1="110" x2="250" y2="90"/>
+                                <line x1="300" y1="160" x2="320" y2="160"/>
+                                <line x1="250" y1="210" x2="250" y2="230"/>
+                                <line x1="200" y1="160" x2="180" y2="160"/>
+                                <line x1="280" y1="125" x2="295" y2="110"/>
+                                <line x1="280" y1="195" x2="295" y2="210"/>
+                                <line x1="220" y1="195" x2="205" y2="210"/>
+                                <line x1="220" y1="125" x2="205" y2="110"/>
+                            </g>
+                            <defs>
+                                <linearGradient id="sunGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#FFD26F"/>
+                                    <stop offset="100%" stop-color="#FF8A3D"/>
+                                </linearGradient>
+                            </defs>
+                            <!-- Dimensions -->
+                            <line x1="50" y1="370" x2="450" y2="370" stroke="white" stroke-width="1" stroke-dasharray="5,5"/>
+                            <text x="250" y="385" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="white">400mm</text>
+                            <line x1="30" y1="50" x2="30" y2="350" stroke="white" stroke-width="1" stroke-dasharray="5,5"/>
+                            <text x="15" y="200" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="white" transform="rotate(-90,15,200)">300mm</text>
+                            <!-- Component numbers -->
+                            <circle cx="70" cy="70" r="15" fill="#FF8A3D"/>
+                            <text x="70" y="74" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="white">1</text>
+                            <circle cx="70" cy="200" r="15" fill="#FF8A3D"/>
+                            <text x="70" y="204" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="white">2</text>
+                            <circle cx="70" cy="330" r="15" fill="#FF8A3D"/>
+                            <text x="70" y="334" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="white">3</text>
+                            <circle cx="430" cy="70" r="15" fill="#FF8A3D"/>
+                            <text x="430" y="74" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="white">4</text>
+                            <circle cx="430" cy="330" r="15" fill="#FF8A3D"/>
+                            <text x="430" y="334" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="white">5</text>
+                            <!-- Title -->
+                            <text x="250" y="35" text-anchor="middle" font-family="'Space Mono', monospace" font-size="14" font-weight="bold" fill="white">CLARO TECHNICAL DRAWING</text>
+                        </svg>
+                        <div class="drawing-stamp">PROTOTYPE REV.02</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Blueprint Features -->
+    <section class="blueprint-features" id="features">
+        <div class="container">
+            <div class="section-title">
+                <div class="section-ref">REF: CL-TECH-001</div>
+                <h2>Technical Overview</h2>
+                <p>CLARO solves everyday window problems with innovative design</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="blueprint-card">
+                    <div class="blueprint-icon"><i class="fas fa-eye-slash"></i></div>
+                    <h3>Privacy Control</h3>
+                    <p>One-click opaque glass for your privacy, even with the window open.</p>
+                    <div class="dimension-line">PVC frame with SmartGlass technology</div>
+                </div>
+
+                <div class="blueprint-card">
+                    <div class="blueprint-icon"><i class="fas fa-wind"></i></div>
+                    <h3>Optimal Ventilation</h3>
+                    <p>Enjoy fresh air without sacrificing your comfort or privacy.</p>
+                    <div class="dimension-line">Decreases A/C costs by up to 15%</div>
+                </div>
+
+                <div class="blueprint-card">
+                    <div class="blueprint-icon"><i class="fas fa-shield-alt"></i></div>
+                    <h3>Insect Barrier</h3>
+                    <p>Invisible mesh that blocks insects but lets air pass through.</p>
+                    <div class="dimension-line">Fine mesh with 0.8mm aperture</div>
+                </div>
+            </div>
+
+            <div class="blueprint-note">
+                <strong>TECHNICAL NOTE:</strong> Installs in just 15 minutes without tools. Compatible with 95% of standard windows.
+            </div>
+        </div>
+    </section>
+
+    <!-- Use Cases Section -->
+    <section class="use-cases" id="use-cases">
+        <div class="container">
+            <div class="section-title">
+                <div class="section-ref">REF: CL-APPS-002</div>
+                <h2>Practical Applications</h2>
+                <p>Real solutions for real problems</p>
+            </div>
+
+            <div class="case-container">
+                <div class="case-item">
+                    <div class="case-title">Video calls with too much backlight?</div>
+                    <p class="case-description">
+                        Remote workers struggle with lighting during video conferences, having to choose between natural light and professional appearance.
+                    </p>
+                    <p class="case-solution">
+                        CLARO regulates light while maintaining perfect airflow, ensuring you look professional on camera without sweating.
+                    </p>
+                </div>
+
+                <div class="case-item">
+                    <div class="case-title">Window facing the street with prying eyes?</div>
+                    <p class="case-description">
+                        Living on ground floors or in dense urban areas means constantly choosing between privacy and fresh air.
+                    </p>
+                    <p class="case-solution">
+                        With CLARO, enjoy open windows with complete privacy - no more shutting yourself in during hot days.
+                    </p>
+                </div>
+
+                <div class="case-item">
+                    <div class="case-title">Want to relax without closing curtains?</div>
+                    <p class="case-description">
+                        Closed curtains create stuffy, dark spaces that increase energy consumption and decrease comfort.
+                    </p>
+                    <p class="case-solution">
+                        CLARO lets you dance, take a bath, or just be yourself without having to choose between privacy and natural light.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Technical Drawing Section -->
+    <section class="technical-drawing">
+        <div class="container">
+            <div class="section-title">
+                <div class="section-ref">REF: CL-ASSY-003</div>
+                <h2>Assembly Diagram</h2>
+                <p>Smart design meets practical innovation</p>
+            </div>
+
+            <div class="drawing-container">
+                <div class="drawing-image">
+                    <svg width="100%" height="auto" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Frame Base -->
+                        <g fill="none" stroke="#4A90E2" stroke-width="1.5">
+                            <rect x="50" y="100" width="20" height="200"/>
+                            <rect x="70" y="100" width="10" height="200" stroke-dasharray="5,2"/>
+                            <rect x="50" y="80" width="300" height="20"/>
+                            <rect x="50" y="70" width="300" height="10" stroke-dasharray="5,2"/>
+                            <rect x="330" y="100" width="20" height="200"/>
+                            <rect x="320" y="100" width="10" height="200" stroke-dasharray="5,2"/>
+                            <rect x="50" y="300" width="300" height="20"/>
+                            <rect x="50" y="320" width="300" height="10" stroke-dasharray="5,2"/>
+                            <rect x="40" y="70" width="20" height="20"/>
+                            <rect x="340" y="70" width="20" height="20"/>
+                            <rect x="40" y="310" width="20" height="20"/>
+                            <rect x="340" y="310" width="20" height="20"/>
+                        </g>
+                        <!-- Screen panels -->
+                        <g transform="translate(400, 100)">
+                            <rect x="0" y="0" width="80" height="200" fill="none" stroke="#4A90E2" stroke-width="1.5"/>
+                            <!-- Sun pattern on the screen -->
+                            <circle cx="40" cy="100" r="25" fill="url(#claroSunGradient)" opacity="0.8"/>
+                            <g stroke="#4A90E2" stroke-width="1" fill="none">
+                                <line x1="40" y1="70" x2="40" y2="60"/>
+                                <line x1="65" y1="100" x2="75" y2="100"/>
+                                <line x1="40" y1="130" x2="40" y2="140"/>
+                                <line x1="15" y1="100" x2="5" y2="100"/>
+                                <line x1="55" y1="80" x2="65" y2="70"/>
+                                <line x1="55" y1="120" x2="65" y2="130"/>
+                                <line x1="25" y1="120" x2="15" y2="130"/>
+                                <line x1="25" y1="80" x2="15" y2="70"/>
+                            </g>
+                            <defs>
+                                <linearGradient id="claroSunGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#FFD26F"/>
+                                    <stop offset="100%" stop-color="#FF8A3D"/>
+                                </linearGradient>
+                            </defs>
+                            <!-- Rails -->
+                            <rect x="85" y="0" width="10" height="200" fill="none" stroke="#4A90E2" stroke-width="1.5"/>
+                            <!-- Dimension lines -->
+                            <line x1="-10" y1="210" x2="90" y2="210" stroke="#4A90E2" stroke-width="1" stroke-dasharray="5,2"/>
+                            <text x="40" y="225" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="#4A90E2">9 cm</text>
+                            <line x1="100" y1="0" x2="100" y2="200" stroke="#4A90E2" stroke-width="1" stroke-dasharray="5,2"/>
+                            <text x="115" y="100" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="#4A90E2" transform="rotate(90,115,100)">22 cm</text>
+                        </g>
+                        <!-- Labels -->
+                        <g>
+                            <circle cx="50" cy="90" r="15" fill="#FF8A3D"/>
+                            <text x="50" y="94" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="white">1</text>
+                            <circle cx="50" cy="200" r="15" fill="#FF8A3D"/>
+                            <text x="50" y="204" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="white">2</text>
+                            <circle cx="50" cy="310" r="15" fill="#FF8A3D"/>
+                            <text x="50" y="314" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="white">3</text>
+                            <circle cx="400" cy="90" r="15" fill="#FF8A3D"/>
+                            <text x="400" y="94" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="white">5</text>
+                            <circle cx="500" cy="200" r="15" fill="#FF8A3D"/>
+                            <text x="500" y="204" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="white">6</text>
+                        </g>
+                        <!-- Title -->
+                        <text x="300" y="30" text-anchor="middle" font-family="'Space Mono', monospace" font-size="14" font-weight="bold" fill="#4A90E2">CLARO ASSEMBLY DIAGRAM</text>
+                        <!-- Technical notations -->
+                        <text x="50" y="30" font-family="'Space Mono', monospace" font-size="10" fill="#4A90E2">REV_02</text>
+                        <text x="500" y="30" font-family="'Space Mono', monospace" font-size="10" fill="#4A90E2">SCALE 1:10</text>
+                    </svg>
+                    <div class="drawing-stamp">APPROVED</div>
+                </div>
+
+                <div class="drawing-specs">
+                    <div class="spec-item">
+                        <span class="spec-number">1</span>
+                        <div class="spec-title">PVC Frame Structure</div>
+                        <p>Lightweight yet durable frame that fits almost any standard window without permanent modifications.</p>
+                    </div>
+
+                    <div class="spec-item">
+                        <span class="spec-number">2</span>
+                        <div class="spec-title">"SmartGlass" Technology</div>
+                        <p>Special fabric that can switch from transparent to opaque in an instant, giving you control over your privacy.</p>
+                    </div>
+
+                    <div class="spec-item">
+                        <span class="spec-number">3</span>
+                        <div class="spec-title">Quick Installation</div>
+                        <p>No tools required. Anyone can set up CLARO in minutes, and it can be easily removed without leaving marks.</p>
+                    </div>
+
+                    <div class="spec-item">
+                        <span class="spec-number">5</span>
+                        <div class="spec-title">Connector Elements</div>
+                        <p>Patented connection system ensures a perfect fit while allowing easy disassembly when needed.</p>
+                    </div>
+
+                    <div class="spec-item">
+                        <span class="spec-number">6</span>
+                        <div class="spec-title">Sliding Mechanism</div>
+                        <p>Smooth-gliding rails let you adjust ventilation and privacy with a simple sliding motion.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials" id="testimonials">
+        <div class="container">
+            <div class="section-title">
+                <div class="section-ref">REF: CL-FEED-004</div>
+                <h2>Field Reports</h2>
+                <p>What our early users have experienced</p>
+            </div>
+
+            <div class="testimonial-grid">
+                <div class="testimonial-item">
+                    <p class="testimonial-text">
+                        "Finally I can work shirtless without stressing! My neighbor across the street can't see anything thanks to CLARO."
+                    </p>
+                    <div class="testimonial-author">Kevin</div>
+                    <div class="testimonial-location">Brussels</div>
+                </div>
+
+                <div class="testimonial-item">
+                    <p class="testimonial-text">
+                        "No more mosquitoes, no more curtains... just happiness. My air conditioning bill has dropped by 20% since I installed CLARO."
+                    </p>
+                    <div class="testimonial-author">Sophie</div>
+                    <div class="testimonial-location">Liège</div>
+                </div>
+
+                <div class="testimonial-item">
+                    <p class="testimonial-text">
+                        "Perfect for my video conferences. No more choosing between a professional background and fresh air. 100% recommended."
+                    </p>
+                    <div class="testimonial-author">David</div>
+                    <div class="testimonial-location">Antwerp</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <div class="section-title">
+                <div class="section-ref">REF: CL-PRIC-005</div>
+                <h2>Specifications & Pricing</h2>
+                <p>Choose the solution that fits your needs</p>
+            </div>
+
+            <div class="pricing-grid">
+                <div class="pricing-item">
+                    <div class="pricing-title">Single Window</div>
+                    <div class="pricing-price">€35 <span class="pricing-original">€45</span></div>
+                    <ul class="pricing-features">
+                        <li>Solution for one window</li>
+                        <li>DIY installation (15min)</li>
+                        <li>Perfect for apartments</li>
+                        <li>1-year warranty</li>
+                    </ul>
+                    <a href="#contact" class="btn">Order Now</a>
+                </div>
+
+                <div class="pricing-item featured">
+                    <div class="pricing-badge">Best Value</div>
+                    <div class="pricing-title">Complete Floor</div>
+                    <div class="pricing-price">€129 <span class="pricing-original">€160</span></div>
+                    <ul class="pricing-features">
+                        <li>Multiple windows (up to 4)</li>
+                        <li>Professional installation included</li>
+                        <li>Synchronized operation</li>
+                        <li>2-year warranty</li>
+                    </ul>
+                    <a href="#contact" class="btn">Order Now</a>
+                </div>
+
+                <div class="pricing-item">
+                    <div class="pricing-title">Full Building</div>
+                    <div class="pricing-price">€299 <span class="pricing-original">€375</span></div>
+                    <ul class="pricing-features">
+                        <li>Entire building solution</li>
+                        <li>Smart home integration</li>
+                        <li>Centralized control</li>
+                        <li>Ideal for businesses</li>
+                        <li>3-year warranty</li>
+                    </ul>
+                    <a href="#contact" class="btn">Order Now</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Form Section -->
+    <section class="lead-form" id="contact">
+        <div class="container">
+            <div class="form-container">
+                <div class="form-title">
+                    <h3>Validation Questionnaire</h3>
+                    <p>Answer 5 quick questions to get 20% off your first order</p>
+                </div>
+
+                <form action="https://formspree.io/f/mblorvdv" method="POST" id="claro-form">
+                    <input type="hidden" name="_subject" value="New CLARO Pre-order">
+                    <input type="hidden" name="_language" value="en">
+                    
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" name="name" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Your Email</label>
+                        <input type="email" id="email" name="email" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">Phone</label>
+                        <input type="tel" id="phone" name="phone" class="form-control">
+                    </div>
+
+                    <div class="form-section-title">Validation Questions</div>
+
+                    <div class="form-group">
+                        <label>1. How often do you close your curtains for privacy?</label>
+                        <select name="privacy_frequency" class="form-control" required>
+                            <option value="">Select an option</option>
+                            <option value="daily">Daily</option>
+                            <option value="sometimes">Sometimes</option>
+                            <option value="never">Never</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>2. Budget for privacy+ventilation solution?</label>
+                        <select name="budget" class="form-control" required>
+                            <option value="">Select an option</option>
+                            <option value="35-50">€35-50</option>
+                            <option value="50-100">€50-100</option>
+                            <option value="100+">€100+</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>3. Your worst nightmare:</label>
+                        <select name="pain_point" class="form-control" required>
+                            <option value="">Select an option</option>
+                            <option value="neighbors">Nosy neighbors</option>
+                            <option value="mosquitoes">Mosquitoes</option>
+                            <option value="heat">Stifling heat</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>4. You are:</label>
+                        <select name="user_type" class="form-control" required>
+                            <option value="">Select an option</option>
+                            <option value="individual">Individual</option>
+                            <option value="hotel">Hotel owner</option>
+                            <option value="business">Business</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>5. Would you buy in pre-order with 20% discount?</label>
+                        <select name="preorder_interest" class="form-control" required>
+                            <option value="">Select an option</option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                            <option value="maybe">Maybe</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Message (optional)</label>
+                        <textarea name="message" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Submit and get my discount code</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-column">
+                    <h4>CLARO</h4>
+                    <p class="footer-text">The smart window solution that combines privacy, ventilation and insect protection in a single product.</p>
+                </div>
+
+                <div class="footer-column">
+                    <h4>Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#use-cases">Solutions</a></li>
+                        <li><a href="#pricing">Pricing</a></li>
+                        <li><a href="#contact">Pre-order</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h4>Contact</h4>
+                    <ul class="footer-links">
+                        <li><a href="mailto:info@claro-windows.com">info@claro-windows.com</a></li>
+                        <li><a href="tel:+32456022569">+32 456 02 25 69</a></li>
+                        <li>Brussels, Belgium</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="copyright">
+                <p>&copy; 2025 CLARO. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Form handling
+        document.getElementById('claro-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Thank you! Your message has been sent. You will receive your discount code shortly.');
+                    this.reset();
+                } else {
+                    alert('Oops! There was an error. Please try again.');
+                }
+            })
+            .catch(error => {
+                alert('Oops! There was an error. Please try again.');
+            });
+        });
+
+        // Animation for light rays
+        document.addEventListener('DOMContentLoaded', function() {
+            const rays = document.querySelectorAll('.light-ray');
+            rays.forEach(ray => {
+                ray.style.animation = `rayAnimation 8s infinite linear`;
+            });
+        });
+    </script>
+</body>
+</html>
